@@ -1,0 +1,21 @@
+{
+  "name": "GraceFlow",
+  "short_name": "GraceFlow",
+  "description": "Calm ministry coordination for East Africa",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF7F2",
+  "theme_color": "#5C6B5A",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192/5C6B5A/ffffff?text=GF",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/5C6B5A/ffffff?text=GF",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
