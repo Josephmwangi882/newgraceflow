@@ -1,6 +1,375 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraceFlow</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:'DM Sans',sans-serif;background:#FAF7F2;color:#2C2420;min-height:100dvh}
+
+  .app{max-width:430px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;position:relative}
+
+  /* AUTH */
+  .auth-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px}
+  .auth-logo{font-family:'Lora',serif;font-size:36px;font-weight:600;color:#5C6B5A;margin-bottom:6px}
+  .auth-logo span{color:#C8823A}
+  .auth-sub{font-size:14px;color:#8C7B73;margin-bottom:40px;text-align:center}
+  .auth-card{background:#fff;border-radius:22px;padding:28px 22px;width:100%;border:1px solid #EDE4D6;box-shadow:0 4px 20px rgba(44,36,32,0.07)}
+  .auth-title{font-family:'Lora',serif;font-size:20px;color:#2C2420;margin-bottom:20px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:12px;font-weight:600;color:#8C7B6B;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .field input{width:100%;background:#FAF7F2;border:1.5px solid #D9CEBA;border-radius:12px;padding:13px 14px;font-size:15px;font-family:'DM Sans',sans-serif;color:#2C2420;outline:none}
+  .field input:focus{border-color:#5C6B5A}
+  .btn-primary{width:100%;background:#5C6B5A;color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:6px}
+  .btn-primary:active{opacity:.85}
+  .auth-switch{text-align:center;margin-top:18px;font-size:14px;color:#8C7B73}
+  .auth-switch a{color:#5C6B5A;font-weight:600;cursor:pointer;text-decoration:none}
+  .error-msg{background:#F0D6D6;color:#B85454;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px}
+  .success-msg{background:#D4DDD3;color:#3D5C3B;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px}
+
+  /* TOP BAR */
+  .top-bar{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;background:#FAF7F2;border-bottom:1px solid #EDE4D6;position:sticky;top:0;z-index:20}
+  .wordmark{font-family:'Lora',serif;font-size:20px;font-weight:600;color:#5C6B5A}
+  .wordmark span{color:#C8823A}
+  .top-right{display:flex;gap:8px;align-items:center}
+  .icon-btn{width:38px;height:38px;border-radius:12px;background:#F2EDE4;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px}
+  .role-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:99px;background:#D4DDD3;color:#5C6B5A}
+
+  /* SCREEN */
+  .screen{flex:1;overflow-y:auto;padding-bottom:90px}
+
+  /* BOTTOM NAV */
+  .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(255,255,255,.95);backdrop-filter:blur(16px);border-top:1px solid #EDE4D6;display:flex;padding:10px 6px calc(10px + env(safe-area-inset-bottom));z-index:30}
+  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 4px;border-radius:12px;border:none;background:transparent}
+  .nav-icon{font-size:22px;line-height:1}
+  .nav-label{font-size:10px;font-weight:500;color:#8C7B73}
+  .nav-item.active .nav-label{color:#5C6B5A;font-weight:700}
+
+  /* HERO */
+  .hero{margin:12px 16px 10px;background:linear-gradient(135deg,#5C6B5A 0%,#3D5C3B 100%);border-radius:22px;padding:24px 22px;color:#fff;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.05)}
+  .hero-greeting{font-size:13px;opacity:.75;margin-bottom:4px}
+  .hero-name{font-family:'Lora',serif;font-size:22px;font-weight:600;margin-bottom:16px;letter-spacing:-.3px}
+  .hero-stats{display:flex;gap:24px}
+  .hero-stat-num{font-size:24px;font-weight:700;letter-spacing:-.5px}
+  .hero-stat-label{font-size:11px;opacity:.65;text-transform:uppercase;letter-spacing:.5px}
+
+  /* CARDS */
+  .card{background:#fff;border-radius:18px;padding:18px;margin:0 16px 10px;border:1px solid #EDE4D6;box-shadow:0 2px 10px rgba(44,36,32,.05);cursor:pointer}
+  .card:active{transform:scale(.985)}
+  .section-head{padding:16px 20px 8px;display:flex;align-items:center;justify-content:space-between}
+  .section-title{font-family:'Lora',serif;font-size:18px;font-weight:600;color:#2C2420}
+  .text-link{font-size:13px;font-weight:500;color:#5C6B5A;background:none;border:none;cursor:pointer}
+
+  /* ATTENTION */
+  .attention{background:linear-gradient(135deg,#7A3B1E,#C8823A);border-radius:16px;padding:14px 18px;margin:0 16px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+  .attention-label{font-size:11px;color:rgba(255,255,255,.8);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .attention-title{font-size:15px;color:#fff;font-weight:600;margin-top:2px}
+  .attention-arrow{font-size:22px;color:rgba(255,255,255,.7)}
+
+  /* ACTIVITY */
+  .activity-row{display:flex;gap:14px;align-items:flex-start}
+  .date-block{background:#F2EDE4;border-radius:12px;padding:8px 10px;text-align:center;min-width:48px;flex-shrink:0}
+  .date-day{font-size:20px;font-weight:700;color:#5C6B5A;line-height:1}
+  .date-month{font-size:10px;font-weight:600;color:#8C7B6B;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+  .activity-title{font-size:15px;font-weight:600;color:#2C2420;margin-bottom:3px}
+  .activity-meta{font-size:12px;color:#8C7B73;margin-bottom:8px}
+  .pill{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;letter-spacing:.3px}
+  .pill-green{background:#D4DDD3;color:#5C6B5A}
+  .pill-amber{background:#F0C990;color:#7A4A10}
+  .pill-red{background:#F0D6D6;color:#B85454}
+
+  /* MINISTRY */
+  .ministry-row{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid #F2EDE4;cursor:pointer}
+  .ministry-row:last-child{border-bottom:none}
+  .ministry-icon-box{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .ministry-name{font-size:15px;font-weight:600;color:#2C2420}
+  .ministry-meta{font-size:12px;color:#8C7B73;margin-top:2px}
+  .ministry-arrow{font-size:20px;color:#C4B49A;margin-left:auto}
+
+  /* ANNOUNCEMENT */
+  .ann-target{font-size:11px;font-weight:600;color:#8C7B6B;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+  .ann-title{font-family:'Lora',serif;font-size:16px;font-weight:600;color:#2C2420;margin-bottom:6px}
+  .ann-body{font-size:14px;color:#5C4F47;line-height:1.55}
+  .ann-time{font-size:12px;color:#8C7B73;margin-top:10px}
+
+  /* ASSIGNMENT HERO */
+  .assign-hero{margin:12px 16px;background:linear-gradient(135deg,#3D5C3B,#7A8F78);border-radius:20px;padding:22px;color:#fff}
+  .assign-mini{font-size:12px;opacity:.7;margin-bottom:4px}
+  .assign-title{font-family:'Lora',serif;font-size:19px;font-weight:600;margin-bottom:14px}
+  .assign-btns{display:flex;gap:10px}
+  .btn-confirm{flex:1;background:rgba(255,255,255,.2);color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:12px;padding:11px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
+  .btn-decline{flex:1;background:rgba(184,84,84,.3);color:#fff;border:1.5px solid rgba(184,84,84,.5);border-radius:12px;padding:11px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
+
+  /* EMPTY */
+  .empty{text-align:center;padding:50px 30px;color:#8C7B73}
+  .empty-icon{font-size:48px;margin-bottom:14px;opacity:.6}
+  .empty-title{font-family:'Lora',serif;font-size:18px;color:#5C4F47;margin-bottom:8px}
+  .empty-sub{font-size:14px;line-height:1.5}
+
+  /* MODAL */
+  .modal-overlay{position:fixed;inset:0;background:rgba(30,20,14,.5);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:flex-end;justify-content:center}
+  .modal-sheet{background:#FAF7F2;border-radius:26px 26px 0 0;padding:10px 0 40px;width:100%;max-width:430px;max-height:88vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.34,1.2,.64,1)}
+  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .modal-handle{width:40px;height:4px;background:#D9CEBA;border-radius:99px;margin:0 auto 18px}
+  .modal-title{font-family:'Lora',serif;font-size:20px;font-weight:600;color:#2C2420;padding:0 20px;margin-bottom:16px}
+
+  /* FORM */
+  .form-group{margin:0 16px 14px}
+  .form-label{display:block;font-size:12px;font-weight:600;color:#8C7B6B;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .form-input{width:100%;background:#fff;border:1.5px solid #D9CEBA;border-radius:12px;padding:12px 14px;font-size:15px;font-family:'DM Sans',sans-serif;color:#2C2420;outline:none}
+  .form-input:focus{border-color:#5C6B5A}
+  .form-select{width:100%;background:#fff;border:1.5px solid #D9CEBA;border-radius:12px;padding:12px 14px;font-size:15px;font-family:'DM Sans',sans-serif;color:#2C2420;outline:none;appearance:none}
+  .padded{padding:0 16px;margin-bottom:16px}
+
+  .loading{text-align:center;padding:40px;color:#8C7B73;font-size:14px}
+  .spinner{display:inline-block;width:24px;height:24px;border:3px solid #D9CEBA;border-top-color:#5C6B5A;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:10px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
 <body>
-<h1>GraceFlow — Coming Soon</h1>
-</body>
-</html>
+<div class="app" id="app">
+  <div class="loading"><div class="spinner"></div><br>Loading GraceFlow...</div>
+</div>
+
+<script>
+// ── SUPABASE ──────────────────────────────────────────────────────────────
+const { createClient } = supabase;
+const sb = createClient(
+  'https://rembeipclfcrvptmhmbo.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlbWJlaXBjbGZjcnZwdG1obWJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NjY5NzgsImV4cCI6MjA5NTA0Mjk3OH0.STBsx5bMaf7yLXMod6NinRg57wacvuBQ0hsENC-RJSY'
+);
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+let state = {
+  user: null,
+  profile: null,
+  screen: 'home',
+  modal: null,
+  ministries: [],
+  activities: [],
+  announcements: [],
+  assignments: [],
+  loading: true,
+  authMode: 'login',
+  notification_count: 2,
+};
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
+const app = () => document.getElementById('app');
+const hour = new Date().getHours();
+const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+
+function isAdmin()  { return state.profile?.role === 'admin'; }
+function isLeader() { return state.profile?.role === 'admin' || state.profile?.role === 'leader'; }
+
+// ── DATABASE SETUP ────────────────────────────────────────────────────────
+async function setupDatabase() {
+  // Create tables via RPC if they don't exist
+  // Using direct inserts with upsert — tables must be created in Supabase dashboard
+  // We'll check if profiles table exists by querying it
+  try {
+    await sb.from('profiles').select('id').limit(1);
+  } catch(e) {
+    console.log('Tables may not exist yet');
+  }
+}
+
+// ── SEED DATA ─────────────────────────────────────────────────────────────
+async function seedDemoData(churchId) {
+  const mins = [
+    { name: 'Church', icon: '⛪', church_id: churchId, is_default: true },
+    { name: 'Leadership', icon: '👑', church_id: churchId, is_default: true },
+    { name: 'Worship', icon: '🎵', church_id: churchId, is_default: false },
+    { name: 'Ushers', icon: '🤝', church_id: churchId, is_default: false },
+    { name: 'Youth', icon: '⚡', church_id: churchId, is_default: false },
+    { name: 'Media', icon: '🎬', church_id: churchId, is_default: false },
+  ];
+  await sb.from('ministries').upsert(mins, { onConflict: 'name,church_id', ignoreDuplicates: true });
+
+  const { data: mList } = await sb.from('ministries').select('*').eq('church_id', churchId);
+  state.ministries = mList || [];
+
+  const worship = mList?.find(m => m.name === 'Worship');
+  if (worship) {
+    const acts = [
+      { title: 'Sunday Service', date: '2026-05-25', time: '09:00', ministry_id: worship.id, church_id: churchId, status: 'published' },
+      { title: 'Worship Rehearsal', date: '2026-05-28', time: '19:00', ministry_id: worship.id, church_id: churchId, status: 'published' },
+    ];
+    await sb.from('activities').upsert(acts, { onConflict: 'title,date,church_id', ignoreDuplicates: true });
+  }
+
+  const anns = [
+    { title: 'Sunday Rehearsal Update', body: 'Rehearsal moves to 6:30 PM this week. Please update your plans.', target: 'Worship', church_id: churchId, created_at: new Date().toISOString() },
+    { title: 'Welcome Team Needed', body: 'We need 2 more volunteers for Sunday\'s welcome team. Please confirm your availability by Friday.', target: 'All Church', church_id: churchId, created_at: new Date().toISOString() },
+  ];
+  await sb.from('announcements').upsert(anns, { onConflict: 'title,church_id', ignoreDuplicates: true });
+}
+
+// ── LOAD DATA ─────────────────────────────────────────────────────────────
+async function loadData() {
+  if (!state.profile?.church_id) return;
+  const cid = state.profile.church_id;
+
+  const [m, a, ann] = await Promise.all([
+    sb.from('ministries').select('*').eq('church_id', cid).order('name'),
+    sb.from('activities').select('*').eq('church_id', cid).order('date'),
+    sb.from('announcements').select('*').eq('church_id', cid).order('created_at', { ascending: false }),
+  ]);
+
+  state.ministries    = m.data   || [];
+  state.activities    = a.data   || [];
+  state.announcements = ann.data || [];
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────
+function render() {
+  if (!state.user) { renderAuth(); return; }
+  if (state.loading) { app().innerHTML = '<div class="loading"><div class="spinner"></div><br>Setting up GraceFlow...</div>'; return; }
+
+  const tabs = buildTabs();
+  const screen = buildScreen();
+  const modal = state.modal ? buildModal() : '';
+
+  app().innerHTML = `
+    <div class="top-bar">
+      <span class="wordmark">Grace<span>Flow</span></span>
+      <div class="top-right">
+        <button class="icon-btn" onclick="showNotifications()">🔔<sup style="font-size:9px;color:#C8823A;font-weight:700">${state.notification_count > 0 ? state.notification_count : ''}</sup></button>
+        <span class="role-badge">${state.profile?.role || 'volunteer'}</span>
+      </div>
+    </div>
+    <div class="screen">${screen}</div>
+    <nav class="bottom-nav">${tabs}</nav>
+    ${modal}
+  `;
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────
+function buildTabs() {
+  const base = [
+    { id: 'home',     icon: '🏠', label: 'Home' },
+    { id: 'timeline', icon: '📅', label: 'Timeline' },
+    { id: 'announce', icon: '📣', label: 'Announce' },
+  ];
+  // Ministry tab visible to admin and leader only
+  if (isLeader()) {
+    base.splice(1, 0, { id: 'ministries', icon: '✦', label: 'Ministries' });
+  }
+  return base.map(t => `
+    <button class="nav-item ${state.screen === t.id ? 'active' : ''}" onclick="navigate('${t.id}')">
+      <span class="nav-icon">${t.icon}</span>
+      <span class="nav-label">${t.label}</span>
+    </button>
+  `).join('');
+}
+
+// ── SCREENS ───────────────────────────────────────────────────────────────
+function buildScreen() {
+  switch(state.screen) {
+    case 'home':        return screenHome();
+    case 'ministries':  return isLeader() ? screenMinistries() : screenHome();
+    case 'timeline':    return screenTimeline();
+    case 'announce':    return screenAnnounce();
+    default:            return screenHome();
+  }
+}
+
+// HOME
+function screenHome() {
+  const name = state.profile?.full_name?.split(' ')[0] || 'Friend';
+  const role = state.profile?.role;
+
+  const heroStats = isAdmin() ? `
+    <div class="hero-stats">
+      <div><div class="hero-stat-num">${state.activities.length}</div><div class="hero-stat-label">Activities</div></div>
+      <div><div class="hero-stat-num">${state.ministries.length}</div><div class="hero-stat-label">Ministries</div></div>
+      <div><div class="hero-stat-num">1</div><div class="hero-stat-label">Gap</div></div>
+    </div>` : `
+    <div class="hero-stats">
+      <div><div class="hero-stat-num">2</div><div class="hero-stat-label">Serving</div></div>
+      <div><div class="hero-stat-num">1</div><div class="hero-stat-label">Pending</div></div>
+    </div>`;
+
+  const attention = isLeader() ? `
+    <div class="attention" onclick="openModal('attention')">
+      <div>
+        <div class="attention-label">⚠ Needs Attention</div>
+        <div class="attention-title">Worship needs a guitarist Sunday</div>
+      </div>
+      <span class="attention-arrow">›</span>
+    </div>` : '';
+
+  const myAssignment = !isLeader() ? `
+    <div class="assign-hero" onclick="openModal('assignment')">
+      <div class="assign-mini">Worship · Sun 25 May · 9:00 AM</div>
+      <div class="assign-title">Sunday Service — Vocalist</div>
+      <div class="assign-btns">
+        <button class="btn-confirm" onclick="event.stopPropagation();confirmAssignment()">✓ Confirm</button>
+        <button class="btn-decline" onclick="event.stopPropagation()">Can't make it</button>
+      </div>
+    </div>` : '';
+
+  const activities = state.activities.slice(0, 3).map(a => {
+    const d = new Date(a.date);
+    const day = d.getDate();
+    const mon = d.toLocaleString('default',{month:'short'}).toUpperCase();
+    return `
+      <div class="card" onclick="openModal('activity')">
+        <div class="activity-row">
+          <div class="date-block"><div class="date-day">${day}</div><div class="date-month">${mon}</div></div>
+          <div style="flex:1">
+            <div class="activity-title">${a.title}</div>
+            <div class="activity-meta">${a.time || ''}</div>
+            <span class="pill pill-green">✓ Scheduled</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('') || '<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">No activities yet</div><div class="empty-sub">Create your first activity to get started.</div></div>';
+
+  const anns = state.announcements.slice(0, 2).map(a => `
+    <div class="card">
+      <div class="ann-target">${a.target || 'All Church'}</div>
+      <div class="ann-title">${a.title}</div>
+      <div class="ann-body">${(a.body||'').substring(0,90)}${a.body?.length > 90 ? '…' : ''}</div>
+      <div class="ann-time">${timeAgo(a.created_at)}</div>
+    </div>`).join('') || '';
+
+  return `
+    <div class="hero">
+      <div class="hero-greeting">${greeting},</div>
+      <div class="hero-name">${name} 👋</div>
+      ${heroStats}
+    </div>
+    ${attention}
+    ${myAssignment}
+    <div class="section-head">
+      <span class="section-title">Upcoming</span>
+      <button class="text-link" onclick="navigate('timeline')">See all</button>
+    </div>
+    ${activities}
+    <div class="section-head">
+      <span class="section-title">Announcements</span>
+      <button class="text-link" onclick="navigate('announce')">See all</button>
+    </div>
+    ${anns}
+  `;
+}
+
+// MINISTRIES — admin and leader only
+function screenMinistries() {
+  const list = state.ministries.map(m => `
+    <div class="ministry-row" onclick="openModal('ministry_${m.id}')">
+      <div class="ministry-icon-box" style="background:#D4DDD3">${m.icon || '✦'}</div>
+      <div style="flex:1">
+        <div class="ministry-name">${m.name}</div>
+        <div class="ministry-meta">${m.is_default ? 'Default ministry' : 'Ministry'}</div>
+      </div>
+      <span class="ministry-arrow">›</span>
+    </div>`).join('') || '<div class="empty"><div class="empty-icon">✦</div><div class="empty-title">No ministries yet</div><div class="empty-sub">Tap + to create your first ministry.</div></div>';
+
+  return `
