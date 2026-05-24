@@ -39,6 +39,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'DM Sans',sans-serif;backgroun
 .btn:disabled{opacity:.6;cursor:not-allowed}
 .btn-moss{background:#5C6B5A;color:#fff}
 .btn-red{background:#B85454;color:#fff}
+.btn-amber{background:#C8823A;color:#fff}
 .btn-ghost{background:#F2EDE4;color:#5C4F47}
 .auth-switch{text-align:center;margin-top:14px;font-size:14px;color:#8C7B73}
 .auth-switch a{color:#5C6B5A;font-weight:600;cursor:pointer}
@@ -68,6 +69,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'DM Sans',sans-serif;backgroun
 .stat-lbl{font-size:10px;opacity:.65;text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
 .card{background:#fff;border-radius:18px;padding:18px;margin:0 16px 10px;border:1px solid #EDE4D6;box-shadow:0 2px 10px rgba(44,36,32,.04);cursor:pointer;transition:transform .15s}
 .card:active{transform:scale(.985)}
+.card-flat{background:#F2EDE4;border-radius:16px;padding:16px;margin:0 16px 10px;border:1px solid #EDE4D6}
 .sec-head{padding:16px 20px 8px;display:flex;align-items:center;justify-content:space-between}
 .sec-title{font-family:'Lora',Georgia,serif;font-size:18px;font-weight:600;color:#2C2420}
 .tlink{font-size:13px;font-weight:500;color:#5C6B5A;background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:8px}
@@ -96,6 +98,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'DM Sans',sans-serif;backgroun
 .person-row{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid #F2EDE4}
 .person-row:last-child{border-bottom:none}
 .avatar{width:42px;height:42px;border-radius:50%;background:#D4DDD3;color:#3D5C3B;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0}
+.avatar-sm{width:32px;height:32px;border-radius:50%;background:#D4DDD3;color:#3D5C3B;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
 .person-name{font-size:15px;font-weight:500;color:#2C2420}
 .person-meta{font-size:12px;color:#8C7B73;margin-top:1px}
 .wa-btn{width:36px;height:36px;border-radius:10px;background:#25D366;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;text-decoration:none}
@@ -103,6 +106,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'DM Sans',sans-serif;backgroun
 .ann-title{font-family:'Lora',Georgia,serif;font-size:16px;font-weight:600;color:#2C2420;margin-bottom:5px}
 .ann-body{font-size:14px;color:#5C4F47;line-height:1.55}
 .ann-time{font-size:12px;color:#8C7B73;margin-top:8px}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.dot-confirmed{background:#5C6B5A}
+.dot-pending{background:#C8823A}
+.dot-declined{background:#B85454}
 .overlay{position:fixed;inset:0;background:rgba(30,20,14,.5);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
 .sheet{background:#FAF7F2;border-radius:26px 26px 0 0;padding:10px 0 40px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.34,1.2,.64,1)}
 .handle{width:40px;height:4px;background:#D9CEBA;border-radius:99px;margin:0 auto 16px}
@@ -119,6 +126,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'DM Sans',sans-serif;backgroun
 .empty-sub{font-size:13px;line-height:1.5}
 .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#3D5C3B;color:#fff;padding:12px 24px;border-radius:14px;font-size:14px;font-weight:600;z-index:200;white-space:nowrap;animation:toastIn .3s ease}
 .skeleton{background:linear-gradient(90deg,#F2EDE4 25%,#EDE4D6 50%,#F2EDE4 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:10px}
+.assign-person-row{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid #F2EDE4;cursor:pointer;transition:background .12s}
+.assign-person-row:active{background:#F2EDE4}
+.assign-person-row:last-child{border-bottom:none}
+.assign-person-row.unavailable{opacity:.45;cursor:not-allowed}
+.check-circle{width:26px;height:26px;border-radius:50%;border:2px solid #D9CEBA;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.check-circle.checked{background:#5C6B5A;border-color:#5C6B5A;color:#fff}
 </style>
 </head>
 <body>
@@ -141,7 +154,14 @@ window.addEventListener('load',()=>{
 const SURL='https://rembeipclfcrvptmhmbo.supabase.co';
 const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlbWJlaXBjbGZjcnZwdG1obWJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NjY5NzgsImV4cCI6MjA5NTA0Mjk3OH0.STBsx5bMaf7yLXMod6NinRg57wacvuBQ0hsENC-RJSY';
 let sb;
-let S={user:null,profile:null,screen:'home',modal:null,ministries:[],activities:[],announcements:[],people:[],members:[],loading:true,authMode:'login',hasNotif:true,activeMinistry:null};
+let S={
+  user:null,profile:null,screen:'home',modal:null,
+  ministries:[],activities:[],announcements:[],
+  people:[],members:[],assignments:[],myAssignments:[],
+  loading:true,authMode:'login',hasNotif:true,
+  activeMinistry:null,activeActivity:null,
+  activityAssignments:[],availablePeople:[],
+};
 const $=id=>document.getElementById(id);
 const app=()=>$('app');
 const H=new Date().getHours();
@@ -149,7 +169,9 @@ const greet=H<12?'Good morning':H<17?'Good afternoon':'Good evening';
 const isAdmin=()=>S.profile?.role==='admin';
 const isLeader=()=>['admin','leader'].includes(S.profile?.role);
 const initials=n=>n?n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase():'?';
-const timeAgo=ts=>{if(!ts)return'';const h=Math.floor((Date.now()-new Date(ts))/3600000);return h<1?'just now':h<24?h+'h ago':Math.floor(h/24)+'d ago';};async function init(){
+const timeAgo=ts=>{if(!ts)return'';const h=Math.floor((Date.now()-new Date(ts))/3600000);return h<1?'just now':h<24?h+'h ago':Math.floor(h/24)+'d ago';};
+const statusColor={confirmed:'#5C6B5A',pending:'#C8823A',declined:'#B85454'};
+const statusLabel={confirmed:'Confirmed',pending:'Pending',declined:'Declined'};async function init(){
   sb=supabase.createClient(SURL,SKEY);
   const{data:{session}}=await sb.auth.getSession();
   if(session?.user){S.user=session.user;await loadProfile();}
@@ -157,7 +179,13 @@ const timeAgo=ts=>{if(!ts)return'';const h=Math.floor((Date.now()-new Date(ts))/
 }
 async function loadProfile(){
   const{data}=await sb.from('profiles').select('*').eq('id',S.user.id).single();
-  if(data){S.profile=data;await loadData();if(!S.ministries.length)await seedData(data.church_id);await loadData();}
+  if(data){
+    S.profile=data;
+    await loadData();
+    if(!S.ministries.length)await seedData(data.church_id);
+    await loadData();
+    await loadMyAssignments();
+  }
   S.loading=false;render();
 }
 async function loadData(){
@@ -169,20 +197,62 @@ async function loadData(){
     sb.from('announcements').select('*').eq('church_id',cid).order('created_at',{ascending:false}),
     sb.from('people').select('*').eq('church_id',cid).order('full_name'),
   ]);
-  S.ministries=m.data||[];S.activities=a.data||[];S.announcements=ann.data||[];S.people=p.data||[];
+  S.ministries=m.data||[];
+  S.activities=a.data||[];
+  S.announcements=ann.data||[];
+  S.people=p.data||[];
+}
+async function loadMyAssignments(){
+  if(!S.profile?.id)return;
+  const{data}=await sb.from('assignments')
+    .select('*,activity:activities(*),ministry:ministries(*)')
+    .eq('person_id',S.profile.id)
+    .order('created_at',{ascending:false});
+  S.myAssignments=data||[];
+}
+async function loadActivityAssignments(actId){
+  const{data}=await sb.from('assignments')
+    .select('*,person:people(*)')
+    .eq('activity_id',actId);
+  S.activityAssignments=data||[];
 }
 async function loadMinMembers(minId){
-  const{data}=await sb.from('ministry_members').select('*,person:people(*)').eq('ministry_id',minId);
+  const{data}=await sb.from('ministry_members')
+    .select('*,person:people(*)')
+    .eq('ministry_id',minId);
   S.members=data||[];
 }
+async function loadAvailablePeople(actId,minId){
+  const{data:members}=await sb.from('ministry_members')
+    .select('*,person:people(*)')
+    .eq('ministry_id',minId);
+  const{data:assigned}=await sb.from('assignments')
+    .select('person_id')
+    .eq('activity_id',actId);
+  const assignedIds=(assigned||[]).map(a=>a.person_id);
+  S.availablePeople=(members||[]).filter(m=>m.person&&!assignedIds.includes(m.person_id));
+}
 async function seedData(cid){
-  const mins=[{name:'Church',icon:'⛪',church_id:cid,is_default:true},{name:'Leadership',icon:'👑',church_id:cid,is_default:true},{name:'Worship',icon:'🎵',church_id:cid,is_default:false},{name:'Ushers',icon:'🤝',church_id:cid,is_default:false},{name:'Youth',icon:'⚡',church_id:cid,is_default:false},{name:'Media',icon:'🎬',church_id:cid,is_default:false}];
+  const mins=[
+    {name:'Church',icon:'⛪',church_id:cid,is_default:true},
+    {name:'Leadership',icon:'👑',church_id:cid,is_default:true},
+    {name:'Worship',icon:'🎵',church_id:cid,is_default:false},
+    {name:'Ushers',icon:'🤝',church_id:cid,is_default:false},
+    {name:'Youth',icon:'⚡',church_id:cid,is_default:false},
+    {name:'Media',icon:'🎬',church_id:cid,is_default:false},
+  ];
   await sb.from('ministries').upsert(mins,{onConflict:'name,church_id',ignoreDuplicates:true});
   const{data:ml}=await sb.from('ministries').select('*').eq('church_id',cid);
   const w=ml?.find(m=>m.name==='Worship');
   if(w){
-    await sb.from('activities').upsert([{title:'Sunday Service',date:'2026-05-25',time:'09:00',ministry_id:w.id,church_id:cid,status:'published'},{title:'Worship Rehearsal',date:'2026-05-28',time:'19:00',ministry_id:w.id,church_id:cid,status:'published'}],{onConflict:'title,date,church_id',ignoreDuplicates:true});
-    await sb.from('announcements').upsert([{title:'Sunday Rehearsal Update',body:'Rehearsal moves to 6:30 PM this week.',target:'Worship',church_id:cid,created_at:new Date().toISOString()},{title:'Welcome Team Needed',body:'We need 2 more volunteers for Sunday\'s welcome team.',target:'All Church',church_id:cid,created_at:new Date().toISOString()}],{onConflict:'title,church_id',ignoreDuplicates:true});
+    await sb.from('activities').upsert([
+      {title:'Sunday Service',date:'2026-06-01',time:'09:00',ministry_id:w.id,church_id:cid,status:'published'},
+      {title:'Worship Rehearsal',date:'2026-06-04',time:'19:00',ministry_id:w.id,church_id:cid,status:'published'},
+    ],{onConflict:'title,date,church_id',ignoreDuplicates:true});
+    await sb.from('announcements').upsert([
+      {title:'Sunday Rehearsal Update',body:'Rehearsal moves to 6:30 PM this week.',target:'Worship',church_id:cid,created_at:new Date().toISOString()},
+      {title:'Welcome Team Needed',body:'We need 2 more volunteers for Sunday\'s welcome team.',target:'All Church',church_id:cid,created_at:new Date().toISOString()},
+    ],{onConflict:'title,church_id',ignoreDuplicates:true});
   }
 }
 function render(){
@@ -201,7 +271,12 @@ function render(){
     ${S.modal?buildModal():''}`;
 }
 function renderSkeleton(){
-  app().innerHTML=`<div class="top-bar"><span class="wordmark">Grace<span>Flow</span></span></div><div class="screen"><div style="margin:12px 16px;height:140px;border-radius:22px" class="skeleton"></div><div style="margin:0 16px 10px;height:70px;border-radius:16px" class="skeleton"></div><div style="margin:0 16px 10px;height:90px;border-radius:18px" class="skeleton"></div></div>`;
+  app().innerHTML=`<div class="top-bar"><span class="wordmark">Grace<span>Flow</span></span></div>
+  <div class="screen">
+    <div style="margin:12px 16px;height:140px;border-radius:22px" class="skeleton"></div>
+    <div style="margin:0 16px 10px;height:70px;border-radius:16px" class="skeleton"></div>
+    <div style="margin:0 16px 10px;height:90px;border-radius:18px" class="skeleton"></div>
+  </div>`;
 }
 function buildTabs(){
   const tabs=[{id:'home',icon:'🏠',label:'Home'},{id:'timeline',icon:'📅',label:'Timeline'},{id:'announce',icon:'📣',label:'Announce'}];
@@ -216,93 +291,243 @@ function buildScreen(){
 }
 function screenHome(){
   const name=S.profile?.full_name?.split(' ')[0]||'Friend';
-  const heroStats=isAdmin()?`<div class="hero-stats"><div><div class="stat-num">${S.activities.length}</div><div class="stat-lbl">Activities</div></div><div><div class="stat-num">${S.ministries.length}</div><div class="stat-lbl">Ministries</div></div><div><div class="stat-num">${S.people.length}</div><div class="stat-lbl">People</div></div></div>`:`<div class="hero-stats"><div><div class="stat-num">2</div><div class="stat-lbl">Serving</div></div><div><div class="stat-num">1</div><div class="stat-lbl">Pending</div></div></div>`;
-  const attn=isLeader()?`<div class="attn" onclick="openModal('attention')"><div><div class="attn-lbl">⚠ Needs Attention</div><div class="attn-title">Worship needs a guitarist Sunday</div></div><span style="font-size:22px;color:rgba(255,255,255,.7)">›</span></div>`:'';
-  const myAssign=!isLeader()?`<div class="assign-hero" onclick="openModal('assign')"><div class="assign-mini">Worship · Sun 25 May · 9:00 AM</div><div class="assign-title">Sunday Service — Vocalist</div><div class="assign-btns"><button class="btn-cf" onclick="event.stopPropagation();doConfirm()">✓ Confirm</button><button class="btn-dc" onclick="event.stopPropagation()">Can't make it</button></div></div>`:'';
-  const acts=S.activities.slice(0,3).map(a=>{const d=new Date(a.date);return`<div class="card" onclick="openModal('act_${a.id}')"><div class="act-row"><div class="date-blk"><div class="date-d">${d.getDate()}</div><div class="date-m">${d.toLocaleString('default',{month:'short'}).toUpperCase()}</div></div><div style="flex:1"><div style="font-size:15px;font-weight:600;margin-bottom:3px">${a.title}</div><div style="font-size:12px;color:#8C7B73;margin-bottom:8px">${a.time||''}</div><span class="pill pill-green">✓ Scheduled</span></div></div></div>`;}).join('')||`<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">No activities yet</div></div>`;
-  const anns=S.announcements.slice(0,2).map(a=>`<div class="card"><div class="ann-target">${a.target||'All Church'}</div><div class="ann-title">${a.title}</div><div class="ann-body">${(a.body||'').substring(0,80)}${(a.body||'').length>80?'…':''}</div><div class="ann-time">${timeAgo(a.created_at)}</div></div>`).join('');
-  return`<div class="hero"><div class="hero-greeting">${greet},</div><div class="hero-name">${name} 👋</div>${heroStats}</div>${attn}${myAssign}<div class="sec-head"><span class="sec-title">Upcoming</span><button class="tlink" onclick="nav('timeline')">See all</button></div>${acts}<div class="sec-head"><span class="sec-title">Announcements</span><button class="tlink" onclick="nav('announce')">See all</button></div>${anns}`;
+  const pending=S.myAssignments.filter(a=>a.status==='pending');
+  const heroStats=isAdmin()?`
+    <div class="hero-stats">
+      <div><div class="stat-num">${S.activities.length}</div><div class="stat-lbl">Activities</div></div>
+      <div><div class="stat-num">${S.ministries.length}</div><div class="stat-lbl">Ministries</div></div>
+      <div><div class="stat-num">${S.people.length}</div><div class="stat-lbl">People</div></div>
+    </div>`:`
+    <div class="hero-stats">
+      <div><div class="stat-num">${S.myAssignments.length}</div><div class="stat-lbl">Serving</div></div>
+      <div><div class="stat-num">${pending.length}</div><div class="stat-lbl">Pending</div></div>
+    </div>`;
+  const attn=isLeader()?`
+    <div class="attn" onclick="openModal('attention')">
+      <div><div class="attn-lbl">⚠ Needs Attention</div>
+      <div class="attn-title">${S.myAssignments.filter(a=>a.status==='pending').length} unconfirmed assignments</div></div>
+      <span style="font-size:22px;color:rgba(255,255,255,.7)">›</span>
+    </div>`:'';
+  const myAssign=!isLeader()&&pending.length?pending.slice(0,1).map(a=>`
+    <div class="assign-hero" onclick="openModal('my_assign_${a.id}')">
+      <div class="assign-mini">${a.ministry?.name||'Ministry'} · ${a.activity?.date||''} · ${a.activity?.time||''}</div>
+      <div class="assign-title">${a.activity?.title||'Assignment'} — ${a.role||'Volunteer'}</div>
+      <div class="assign-btns">
+        <button class="btn-cf" onclick="event.stopPropagation();confirmAssignment('${a.id}')">✓ Confirm</button>
+        <button class="btn-dc" onclick="event.stopPropagation();declineAssignment('${a.id}')">Can't make it</button>
+      </div>
+    </div>`).join(''):'';
+  const confirmedAssign=!isLeader()&&S.myAssignments.filter(a=>a.status==='confirmed').length?`
+    <div class="sec-head"><span class="sec-title">Your Assignments</span></div>
+    ${S.myAssignments.filter(a=>a.status==='confirmed').slice(0,3).map(a=>`
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="status-dot dot-confirmed"></div>
+          <div style="flex:1">
+            <div style="font-size:15px;font-weight:600">${a.activity?.title||'Activity'}</div>
+            <div style="font-size:12px;color:#8C7B73;margin-top:2px">${a.role||'Volunteer'} · ${a.activity?.date||''}</div>
+          </div>
+          <span class="pill pill-green">✓ Confirmed</span>
+        </div>
+      </div>`).join('')}`:'';
+  const acts=S.activities.slice(0,3).map(a=>{
+    const d=new Date(a.date);
+    return`<div class="card" onclick="openActivity('${a.id}')">
+      <div class="act-row">
+        <div class="date-blk"><div class="date-d">${d.getDate()}</div><div class="date-m">${d.toLocaleString('default',{month:'short'}).toUpperCase()}</div></div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:600;margin-bottom:3px">${a.title}</div>
+          <div style="font-size:12px;color:#8C7B73;margin-bottom:8px">${a.time||''}</div>
+          <span class="pill pill-green">✓ Scheduled</span>
+        </div>
+      </div></div>`;
+  }).join('')||`<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">No activities yet</div><div class="empty-sub">Create your first activity.</div></div>`;
+  const anns=S.announcements.slice(0,2).map(a=>`
+    <div class="card">
+      <div class="ann-target">${a.target||'All Church'}</div>
+      <div class="ann-title">${a.title}</div>
+      <div class="ann-body">${(a.body||'').substring(0,80)}${(a.body||'').length>80?'…':''}</div>
+      <div class="ann-time">${timeAgo(a.created_at)}</div>
+    </div>`).join('');
+  return`
+    <div class="hero"><div class="hero-greeting">${greet},</div><div class="hero-name">${name} 👋</div>${heroStats}</div>
+    ${attn}${myAssign}${confirmedAssign}
+    <div class="sec-head"><span class="sec-title">Upcoming</span><button class="tlink" onclick="nav('timeline')">See all</button></div>
+    ${acts}
+    <div class="sec-head"><span class="sec-title">Announcements</span><button class="tlink" onclick="nav('announce')">See all</button></div>
+    ${anns}`;
 }
 function screenMin(){
-  const list=S.ministries.map(m=>`<div class="min-row" onclick="openMinistry('${m.id}')"><div class="min-icon">${m.icon||'✦'}</div><div style="flex:1"><div class="min-name">${m.name}</div><div class="min-meta">${m.is_default?'Default':'Ministry'}</div></div><span style="font-size:20px;color:#C4B49A">›</span></div>`).join('')||`<div class="empty"><div class="empty-icon">✦</div><div class="empty-title">No ministries yet</div></div>`;
+  const list=S.ministries.map(m=>`
+    <div class="min-row" onclick="openMinistry('${m.id}')">
+      <div class="min-icon">${m.icon||'✦'}</div>
+      <div style="flex:1"><div class="min-name">${m.name}</div><div class="min-meta">${m.is_default?'Default':'Ministry'}</div></div>
+      <span style="font-size:20px;color:#C4B49A">›</span>
+    </div>`).join('')||`<div class="empty"><div class="empty-icon">✦</div><div class="empty-title">No ministries yet</div></div>`;
   return`<div class="sec-head"><span class="sec-title">Ministries</span>${isAdmin()?'<button class="tlink" onclick="openModal(\'add_min\')">＋ Add</button>':''}</div><div class="card" style="padding:0;overflow:hidden">${list}</div>`;
 }
 function screenTimeline(){
-  const list=S.activities.map(a=>{const d=new Date(a.date);return`<div class="card" onclick="openModal('act_${a.id}')"><div class="act-row"><div class="date-blk"><div class="date-d">${d.getDate()}</div><div class="date-m">${d.toLocaleString('default',{month:'short'}).toUpperCase()}</div></div><div style="flex:1"><div style="font-size:15px;font-weight:600;margin-bottom:3px">${a.title}</div><div style="font-size:12px;color:#8C7B73;margin-bottom:8px">${a.time||''}</div><span class="pill pill-green">✓ Scheduled</span></div></div></div>`;}).join('')||`<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Nothing planned yet</div></div>`;
+  const list=S.activities.map(a=>{
+    const d=new Date(a.date);
+    return`<div class="card" onclick="openActivity('${a.id}')">
+      <div class="act-row">
+        <div class="date-blk"><div class="date-d">${d.getDate()}</div><div class="date-m">${d.toLocaleString('default',{month:'short'}).toUpperCase()}</div></div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:600;margin-bottom:3px">${a.title}</div>
+          <div style="font-size:12px;color:#8C7B73;margin-bottom:8px">${a.time||''}</div>
+          <span class="pill pill-green">✓ Scheduled</span>
+        </div>
+      </div></div>`;
+  }).join('')||`<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Nothing planned yet</div></div>`;
   return`<div class="sec-head"><span class="sec-title">Timeline</span>${isLeader()?'<button class="tlink" onclick="openModal(\'add_act\')">＋ Add</button>':''}</div>${list}`;
 }
 function screenAnnounce(){
-  const list=S.announcements.map(a=>`<div class="card"><div class="ann-target">${a.target||'All Church'}</div><div class="ann-title">${a.title}</div><div class="ann-body">${a.body||''}</div><div class="ann-time">${timeAgo(a.created_at)}</div></div>`).join('')||`<div class="empty"><div class="empty-icon">📣</div><div class="empty-title">No announcements yet</div></div>`;
+  const list=S.announcements.map(a=>`
+    <div class="card">
+      <div class="ann-target">${a.target||'All Church'}</div>
+      <div class="ann-title">${a.title}</div>
+      <div class="ann-body">${a.body||''}</div>
+      <div class="ann-time">${timeAgo(a.created_at)}</div>
+    </div>`).join('')||`<div class="empty"><div class="empty-icon">📣</div><div class="empty-title">No announcements yet</div></div>`;
   return`<div class="sec-head"><span class="sec-title">Announcements</span>${isLeader()?'<button class="tlink" onclick="openModal(\'add_ann\')">＋ New</button>':''}</div>${list}`;
+}
+async function openActivity(id){
+  S.activeActivity=S.activities.find(a=>a.id===id);
+  await loadActivityAssignments(id);
+  openModal('activity_detail');
 }
 async function openMinistry(id){
   S.activeMinistry=S.ministries.find(m=>m.id===id);
   await loadMinMembers(id);
   openModal('min_detail');
 }
+function modalActivityDetail(){
+  const a=S.activeActivity;
+  if(!a)return'';
+  const d=new Date(a.date);
+  const min=S.ministries.find(m=>m.id===a.ministry_id);
+  const asgns=S.activityAssignments;
+  const confirmed=asgns.filter(x=>x.status==='confirmed').length;
+  const assignList=asgns.length?asgns.map(x=>`
+    <div class="person-row">
+      <div class="status-dot dot-${x.status||'pending'}" style="margin-right:4px"></div>
+      <div class="avatar-sm">${initials(x.person?.full_name||'?')}</div>
+      <div style="flex:1">
+        <div class="person-name" style="font-size:14px">${x.person?.full_name||'Unknown'}</div>
+        <div class="person-meta">${x.role||'Volunteer'}</div>
+      </div>
+      <span class="pill" style="background:${x.status==='confirmed'?'#D4DDD3':x.status==='declined'?'#F0D6D6':'#F7E8D0'};color:${statusColor[x.status]||'#7A4A10'}">${statusLabel[x.status]||'Pending'}</span>
+    </div>`).join(''):`<div style="padding:16px;text-align:center;color:#8C7B73;font-size:14px">No assignments yet. Tap assign to add volunteers.</div>`;
+  return`
+    <div class="sheet-title">${a.title}</div>
+    <div style="margin:0 16px 14px;background:#F2EDE4;border-radius:14px;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><div style="font-size:11px;color:#8C7B6B;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Date</div><div style="font-size:14px;font-weight:500">${d.toDateString()}</div></div>
+      <div><div style="font-size:11px;color:#8C7B6B;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Time</div><div style="font-size:14px;font-weight:500">${a.time||'—'}</div></div>
+      <div><div style="font-size:11px;color:#8C7B6B;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Ministry</div><div style="font-size:14px;font-weight:500">${min?.name||'—'}</div></div>
+      <div><div style="font-size:11px;color:#8C7B6B;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Coverage</div><div style="font-size:14px;font-weight:500">${confirmed}/${asgns.length} confirmed</div></div>
+    </div>
+    <div style="padding:0 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:15px;font-weight:600;color:#2C2420">Assignments</span>
+      ${isLeader()?`<button class="tlink" onclick="openAssignModal('${a.id}','${a.ministry_id}')">＋ Assign</button>`:''}
+    </div>
+    <div style="background:#fff;border-radius:16px;margin:0 16px;border:1px solid #EDE4D6;overflow:hidden">${assignList}</div>`;
+}
+async function openAssignModal(actId,minId){
+  await loadAvailablePeople(actId,minId);
+  S.modal='assign_volunteer';
+  render();
+}
+function modalAssignVolunteer(){
+  const a=S.activeActivity;
+  if(!a)return'';
+  const list=S.availablePeople.length?S.availablePeople.map(m=>`
+    <div class="assign-person-row" onclick="assignPerson('${m.person_id}','${a.id}','${(m.roles||[]).join(',')}')">
+      <div class="avatar-sm">${initials(m.person?.full_name||'?')}</div>
+      <div style="flex:1">
+        <div class="person-name" style="font-size:14px">${m.person?.full_name||'Unknown'}</div>
+        <div class="person-meta">${(m.roles||[]).join(', ')||'Volunteer'}</div>
+      </div>
+      <span style="font-size:18px;color:#C4B49A">›</span>
+    </div>`).join(''):`<div style="padding:20px;text-align:center;color:#8C7B73;font-size:14px">All ministry members are already assigned.</div>`;
+  return`<div class="sheet-title">Assign Volunteer</div><div style="background:#fff;border-radius:16px;margin:0 16px;border:1px solid #EDE4D6;overflow:hidden">${list}</div>`;
+}
+async function assignPerson(personId,actId,roles){
+  const roleList=roles?roles.split(',').filter(Boolean):[];
+  const role=roleList.length===1?roleList[0]:'';
+  if(roleList.length>1){
+    S.pendingAssign={personId,actId,roles:roleList};
+    S.modal='pick_role';
+    render();
+    return;
+  }
+  await doAssign(personId,actId,role);
+}
+function modalPickRole(){
+  const{personId,actId,roles}=S.pendingAssign||{};
+  const person=S.people.find(p=>p.id===personId);
+  return`
+    <div class="sheet-title">Pick Role</div>
+    <div style="padding:0 20px;margin-bottom:16px;font-size:14px;color:#5C4F47">${person?.full_name||'Volunteer'} can fill multiple roles. Which role this time?</div>
+    ${(roles||[]).map(r=>`<div class="assign-person-row" onclick="doAssign('${personId}','${actId}','${r}')"><div style="flex:1;font-size:15px;font-weight:500;color:#2C2420">${r}</div><span style="font-size:18px;color:#C4B49A">›</span></div>`).join('')}`;
+}
+async function doAssign(personId,actId,role){
+  const deadline=new Date(Date.now()+48*60*60*1000).toISOString();
+  const{error}=await sb.from('assignments').insert({
+    person_id:personId,
+    activity_id:actId,
+    church_id:S.profile.church_id,
+    role:role||'Volunteer',
+    status:'pending',
+    deadline,
+  });
+  if(!error){
+    await loadActivityAssignments(actId);
+    S.modal='activity_detail';
+    render();
+    toast('✓ Volunteer assigned — notification sent');
+  } else toast('Error: '+error.message,'#B85454');
+}
+async function confirmAssignment(id){
+  const{error}=await sb.from('assignments').update({status:'confirmed'}).eq('id',id);
+  if(!error){await loadMyAssignments();render();toast('✓ Confirmed — see you then!');}
+  else toast('Error: '+error.message,'#B85454');
+}
+async function declineAssignment(id){
+  const{error}=await sb.from('assignments').update({status:'declined'}).eq('id',id);
+  if(!error){await loadMyAssignments();render();toast('Assignment declined. Your leader has been notified.','#C8823A');}
+  else toast('Error: '+error.message,'#B85454');
+}
+function modalMyAssignment(id){
+  const a=S.myAssignments.find(x=>x.id===id);
+  if(!a)return'';
+  return`
+    <div class="sheet-title">Your Assignment</div>
+    <div style="margin:0 16px 16px;background:linear-gradient(135deg,#3D5C3B,#7A8F78);border-radius:18px;padding:20px;color:#fff">
+      <div style="font-size:12px;opacity:.7;margin-bottom:3px">${a.ministry?.name||'Ministry'} · ${a.activity?.date||''} · ${a.activity?.time||''}</div>
+      <div style="font-family:'Lora',Georgia,serif;font-size:19px;font-weight:600;margin-bottom:3px">${a.activity?.title||'Activity'}</div>
+      <div style="font-size:13px;opacity:.75">Role: ${a.role||'Volunteer'}</div>
+    </div>
+    <div style="padding:0 16px;margin-bottom:16px;font-size:14px;color:#5C4F47;line-height:1.5">Please confirm your availability. If you cannot make it tap decline and your leader will find a replacement.</div>
+    ${a.status==='confirmed'?`<div style="padding:0 16px"><div class="pill pill-green" style="font-size:14px;padding:10px 20px">✓ You have confirmed this assignment</div></div>`:`
+    <div style="display:flex;gap:10px;padding:0 16px">
+      <button class="btn btn-moss" style="margin-top:0" onclick="confirmAssignment('${a.id}');closeModal()">✓ Confirm</button>
+      <button class="btn btn-red" style="margin-top:0" onclick="declineAssignment('${a.id}');closeModal()">Can't make it</button>
+    </div>`}`;
+}
 function modalMinDetail(){
   const m=S.activeMinistry;
   if(!m)return'';
   const memberList=S.members.length?S.members.map(mm=>{
     const p=mm.person;if(!p)return'';
-    const ini=initials(p.full_name);
     const roles=(mm.roles||[]).join(', ')||'Volunteer';
     const wa=p.phone?`<a href="https://wa.me/${p.phone.replace(/\D/g,'')}" class="wa-btn" onclick="event.stopPropagation()">💬</a>`:'';
-    return`<div class="person-row"><div class="avatar">${ini}</div><div style="flex:1"><div class="person-name">${p.full_name}</div><div class="person-meta">${roles}</div></div>${wa}</div>`;
-  }).join(''):`<div class="empty" style="padding:30px"><div class="empty-icon">👥</div><div class="empty-title">No members yet</div><div class="empty-sub">Add people to this ministry.</div></div>`;
-  return`<div style="text-align:center;padding:10px 20px 16px"><div style="font-size:44px;margin-bottom:8px">${m.icon||'✦'}</div><div style="font-family:'Lora',Georgia,serif;font-size:22px;font-weight:600">${m.name}</div><div style="font-size:13px;color:#8C7B73;margin-top:3px">${S.members.length} member${S.members.length!==1?'s':''}</div></div><div style="display:flex;gap:10px;padding:0 16px;margin-bottom:16px"><div style="flex:1;background:#F2EDE4;border-radius:14px;padding:12px;text-align:center"><div style="font-size:18px;margin-bottom:3px">📅</div><div style="font-size:15px;font-weight:600">${S.activities.filter(a=>a.ministry_id===m.id).length}</div><div style="font-size:11px;color:#8C7B6B">Activities</div></div><div style="flex:1;background:#F2EDE4;border-radius:14px;padding:12px;text-align:center"><div style="font-size:18px;margin-bottom:3px">👥</div><div style="font-size:15px;font-weight:600">${S.members.length}</div><div style="font-size:11px;color:#8C7B6B">Members</div></div></div><div style="padding:0 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between"><span style="font-size:15px;font-weight:600;color:#2C2420">Members</span>${isLeader()?'<button class="tlink" onclick="openModal(\'add_person\')">＋ Add Person</button>':''}</div><div style="background:#fff;border-radius:16px;margin:0 16px;border:1px solid #EDE4D6;overflow:hidden">${memberList}</div>`;
-}
-function buildModal(){
-  return`<div class="overlay" onclick="closeModal()"><div class="sheet" onclick="event.stopPropagation()"><div class="handle"></div>${modalContent()}</div></div>`;
-}
-function modalContent(){
-  const m=S.modal;
-  if(m==='notif')return modalNotif();
-  if(m==='attention')return modalAttn();
-  if(m==='assign')return modalAssign();
-  if(m==='add_min')return modalAddMin();
-  if(m==='add_act')return modalAddAct();
-  if(m==='add_ann')return modalAddAnn();
-  if(m==='add_person')return modalAddPerson();
-  if(m==='min_detail')return modalMinDetail();
-  if(m?.startsWith('act_'))return modalActivity(m.replace('act_',''));
-  return'';
-}
-function modalNotif(){
-  S.hasNotif=false;
-  return`<div class="sheet-title">Notifications</div>${[{icon:'📋',text:'You have been assigned as Vocalist — Sunday Service · 25 May',time:'2h ago'},{icon:'📣',text:'Announcement: Rehearsal moved to 6:30 PM',time:'5h ago'}].map(n=>`<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid #F2EDE4;align-items:flex-start"><span style="font-size:22px">${n.icon}</span><div><div style="font-size:14px;color:#2C2420;line-height:1.4">${n.text}</div><div style="font-size:12px;color:#8C7B73;margin-top:3px">${n.time}</div></div></div>`).join('')}`;
-}
-function modalAttn(){
-  return`<div class="sheet-title">Needs Attention</div>${[{icon:'⚠️',label:'Coverage Gap',title:'Worship — guitarist needed Sunday',time:'Sun 25 May · 9:00 AM'},{icon:'⏳',label:'Unconfirmed',title:'3 volunteers haven\'t confirmed',time:'Sun 25 May · 9:00 AM'}].map(i=>`<div style="padding:14px 20px;border-bottom:1px solid #F2EDE4"><div style="display:flex;gap:12px"><span style="font-size:22px">${i.icon}</span><div><div style="font-size:11px;font-weight:600;color:#8C7B6B;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">${i.label}</div><div style="font-size:15px;font-weight:600;color:#2C2420;margin-bottom:2px">${i.title}</div><div style="font-size:12px;color:#8C7B73">${i.time}</div></div></div></div>`).join('')}`;
-}
-function modalAssign(){
-  return`<div class="sheet-title">Your Assignment</div><div style="margin:0 16px 16px;background:linear-gradient(135deg,#3D5C3B,#7A8F78);border-radius:18px;padding:20px;color:#fff"><div style="font-size:12px;opacity:.7;margin-bottom:3px">Worship · Sun 25 May · 9:00 AM</div><div style="font-family:'Lora',Georgia,serif;font-size:19px;font-weight:600;margin-bottom:3px">Sunday Service</div><div style="font-size:13px;opacity:.75">Role: Vocalist</div></div><div style="padding:0 16px;margin-bottom:16px;font-size:14px;color:#5C4F47;line-height:1.5">Please confirm your availability for this serving slot.</div><div style="display:flex;gap:10px;padding:0 16px"><button class="btn btn-moss" style="margin-top:0" onclick="doConfirm()">✓ Confirm</button><button class="btn btn-red" style="margin-top:0" onclick="closeModal()">Can't make it</button></div>`;
-}
-function modalActivity(id){
-  const a=S.activities.find(x=>x.id===id)||S.activities[0];
-  if(!a)return'<div class="sheet-title">Activity</div>';
-  const d=new Date(a.date);
-  const min=S.ministries.find(m=>m.id===a.ministry_id);
-  return`<div class="sheet-title">${a.title}</div><div style="margin:0 16px 14px;background:#F2EDE4;border-radius:14px;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px"><div><div style="font-size:11px;color:#8C7B6B;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Date</div><div style="font-size:14px;font-weight:500">${d.toDateString()}</div></div><div><div style="font-size:11px;color:#8C7B6B;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Time</div><div style="font-size:14px;font-weight:500">${a.time||'—'}</div></div><div><div style="font-size:11px;color:#8C7B6B;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Ministry</div><div style="font-size:14px;font-weight:500">${min?.name||'—'}</div></div><div><div style="font-size:11px;color:#8C7B6B;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Status</div><div style="font-size:14px;font-weight:500;text-transform:capitalize">${a.status||'draft'}</div></div></div><div style="padding:0 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between"><span style="font-size:15px;font-weight:600;color:#2C2420">Assignments</span>${isLeader()?'<button class="tlink">＋ Assign</button>':''}</div><div style="margin:0 16px;background:#fff;border-radius:14px;border:1px solid #EDE4D6;padding:16px;color:#8C7B73;font-size:14px;text-align:center">No assignments yet.</div>`;
-}
-function modalAddMin(){
-  return`<div class="sheet-title">New Ministry</div><div class="fg"><label class="fl">Ministry Name</label><input class="fi" id="mn" placeholder="e.g. Worship, Youth, Media…"></div><div class="fg"><label class="fl">Icon (emoji)</label><input class="fi" id="mi" placeholder="🎵" maxlength="2"></div><div class="px"><button class="btn btn-moss" onclick="saveMin()">Create Ministry</button></div>`;
-}
-function modalAddAct(){
-  const opts=S.ministries.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
-  return`<div class="sheet-title">New Activity</div><div class="fg"><label class="fl">Title</label><input class="fi" id="at" placeholder="e.g. Sunday Service"></div><div class="fg"><label class="fl">Ministry</label><select class="fs" id="am">${opts}</select></div><div class="fg"><label class="fl">Date</label><input class="fi" id="ad" type="date"></div><div class="fg"><label class="fl">Time</label><input class="fi" id="ati" type="time"></div><div class="px"><button class="btn btn-moss" onclick="saveAct()">Create Activity</button></div>`;
-}
-function modalAddAnn(){
-  const opts=['All Church',...S.ministries.map(m=>m.name)].map(n=>`<option>${n}</option>`).join('');
-  return`<div class="sheet-title">New Announcement</div><div class="fg"><label class="fl">Send To</label><select class="fs" id="agt">${opts}</select></div><div class="fg"><label class="fl">Title</label><input class="fi" id="ati2" placeholder="Announcement title…"></div><div class="fg"><label class="fl">Message</label><textarea class="fi" id="ab" rows="4" placeholder="Write your message…" style="resize:none;line-height:1.5"></textarea></div><div class="px"><button class="btn btn-moss" onclick="saveAnn()">Send Announcement</button></div>`;
-}
-function modalAddPerson(){
-  const m=S.activeMinistry;
-  return`<div class="sheet-title">Add Person</div><div class="fg"><label class="fl">Full Name</label><input class="fi" id="pn" placeholder="e.g. Sarah Reeves"></div><div class="fg"><label class="fl">Phone (with country code)</label><input class="fi" id="pp" placeholder="254712345678" type="tel"></div><div class="fg"><label class="fl">Role in ${m?.name||'Ministry'}</label><input class="fi" id="pr" placeholder="e.g. Vocalist, Sound, Usher…"></div><div class="px"><button class="btn btn-moss" onclick="savePerson()">Add Person</button></div>`;
-}function nav(s){if(s==='ministries'&&!isLeader())return;S.screen=s;render();}
+    return`<div class="person-row"><div class="avatar">${initials(p.full_name)}</div><div style="flex:1"><div class="person-name">${p.full_name}</div><div class="person-meta">${roles}</div></div>${wa}</div>`;
+  }).join(''):`<div class="empty" style="padding:30px"><div class="empty-icon">👥</div><div class="empty-title">No members yet</div><div class="empty-sub">Tap + Add Person to get started.</div></div>`;
+  return`
+    <div style="text-align:center;padding:10px 20px 16px">
+function nav(s){if(s==='ministries'&&!isLeader())return;S.screen=s;render();}
 function openModal(n){S.modal=n;render();}
 function closeModal(){S.modal=null;render();}
-function doConfirm(){closeModal();toast('✓ Confirmed — see you Sunday!');}
 function toast(msg,color='#3D5C3B'){
   const t=document.createElement('div');
   t.className='toast';t.style.background=color;t.textContent=msg;
@@ -323,7 +548,10 @@ async function saveAct(){
   const date=$('ad')?.value;
   const time=$('ati')?.value;
   if(!title||!date){toast('Please fill in title and date','#B85454');return;}
-  const{error}=await sb.from('activities').insert({title,ministry_id:min_id,date,time,church_id:S.profile.church_id,status:'draft'});
+  const{error}=await sb.from('activities').insert({
+    title,ministry_id:min_id,date,time,
+    church_id:S.profile.church_id,status:'draft'
+  });
   if(!error){await loadData();closeModal();toast('✓ Activity created');}
   else toast('Error: '+error.message,'#B85454');
 }
@@ -332,7 +560,11 @@ async function saveAnn(){
   const title=($('ati2')?.value||'').trim();
   const body=($('ab')?.value||'').trim();
   if(!title||!body){toast('Please fill in title and message','#B85454');return;}
-  const{error}=await sb.from('announcements').insert({target,title,body,church_id:S.profile.church_id,created_at:new Date().toISOString()});
+  const{error}=await sb.from('announcements').insert({
+    target,title,body,
+    church_id:S.profile.church_id,
+    created_at:new Date().toISOString()
+  });
   if(!error){await loadData();closeModal();toast('✓ Announcement sent');}
   else toast('Error: '+error.message,'#B85454');
 }
@@ -342,10 +574,17 @@ async function savePerson(){
   const role=($('pr')?.value||'').trim();
   if(!name){toast('Please enter a name','#B85454');return;}
   const cid=S.profile.church_id;
-  const{data:person,error:pe}=await sb.from('people').insert({full_name:name,phone,church_id:cid}).select().single();
+  const{data:person,error:pe}=await sb.from('people')
+    .insert({full_name:name,phone,church_id:cid})
+    .select().single();
   if(pe){toast('Error: '+pe.message,'#B85454');return;}
   if(S.activeMinistry){
-    await sb.from('ministry_members').insert({person_id:person.id,ministry_id:S.activeMinistry.id,church_id:cid,roles:role?[role]:[]});
+    await sb.from('ministry_members').insert({
+      person_id:person.id,
+      ministry_id:S.activeMinistry.id,
+      church_id:cid,
+      roles:role?[role]:[],
+    });
   }
   await loadData();
   await loadMinMembers(S.activeMinistry?.id);
@@ -400,7 +639,10 @@ async function doSignup(){
     trial_ends_at:new Date(Date.now()+30*24*60*60*1000).toISOString()
   }).select().single();
   if(ce){authMsg('Error: '+ce.message);setBtn('Start 30-Day Free Trial');return;}
-  await sb.from('profiles').insert({id:uid,full_name:fname,email,role:'admin',church_id:cd.id});
+  await sb.from('profiles').insert({
+    id:uid,full_name:fname,email,
+    role:'admin',church_id:cd.id
+  });
   authMsg('Church created! Signing you in…','success');
   S.user=data.user;
   await loadProfile();
